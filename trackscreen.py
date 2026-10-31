@@ -1,13 +1,15 @@
 from main import get_bulb
 import mss
-from PIL import Image
+from PIL import Image, ImageGrab
 from time import sleep
 
 IMG_SRC = "/tmp/screenshot_bulb.png"
 
 def snap_screen():
-    with mss.MSS() as sct:
-        sct.shot(output=IMG_SRC)
+    #with mss.MSS() as sct:
+        #sct.shot(output=IMG_SRC)
+    screenshot = ImageGrab.grab()
+    screenshot.save(IMG_SRC)
 
 def avarage_pixel_value_rgb(image_src:str):
     img = Image.open(image_src)
