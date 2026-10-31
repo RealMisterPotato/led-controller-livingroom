@@ -33,6 +33,10 @@ if __name__ == "__main__":
             snap_screen()
             avg = avarage_pixel_value_rgb(IMG_SRC)
             bulb.set_rgb(avg[0], avg[1], avg[2])
+
+            tup_avg = (avg[0] + avg[1] + avg[2])/3
+            rel = float(tup_avg/255)
+            bulb.set_brightness(rel*100)
             print(avg)
             sleep(2)
     except KeyboardInterrupt:
