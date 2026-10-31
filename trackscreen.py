@@ -17,6 +17,7 @@ def avarage_pixel_value_rgb(image_src:str):
         #print(f"(R: {pixelval[0]}, G: {pixelval[1]}, B: {pixelval[2]})")
         avgpixel = tuple(x+y for x, y in zip(avgpixel, pixelval))
     avgpixel = tuple(int(x/len(flattened)) for x in avgpixel)
+    avgpixel = tuple((x if x > 0 else 1) for x in avgpixel)
     #print(avgpixel)
     return avgpixel
 
