@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
                 if prev_rgb_value == None or sum_diff >= args.threshold:
                     bulb.set_rgb(avg[0], avg[1], avg[2])
-                    tup_avg = (avg[0] + avg[1] + avg[2])/3
-                    rel = float(tup_avg/255)
+                    tup_max = max(avg[0], max(avg[1], avg[2]))
+                    rel = float(tup_max/255)
                     brightness = rel*100
                     bulb.set_brightness(brightness)
                     print(f"Set: RGB={avg}, Brightness={brightness}%\n\n")
