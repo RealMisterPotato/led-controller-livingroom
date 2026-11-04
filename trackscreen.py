@@ -9,7 +9,7 @@ def snap_screen() -> Image:
     screenshot_image = ImageGrab.grab()
     return screenshot_image
 
-def avarage_pixel_value_rgb(image:Image):
+def avarage_pixel_value_rgb(image:Image, alpha):
     img = image
     flattened = img.get_flattened_data()
     arr = np.array(flattened)
@@ -25,10 +25,10 @@ def avarage_pixel_value_rgb(image:Image):
 
     # 2. Control Parameter (0.0 = completely equal weights, 1.0 = gray gets zero weight)
     # Lower this value to give gray pixels more influence!
-    alpha = 0.9 
+    _alpha = alpha
 
     # 3. Calculate final blended weights
-    weights = alpha * vividness_norm + (1 - alpha)
+    weights = _alpha * vividness_norm + (1 - _alpha)
 
     # 4. Compute the weighted average
     weighted_rgb_avg = np.average(arr, axis=0, weights=weights)
@@ -40,8 +40,9 @@ def avarage_pixel_value_rgb(image:Image):
 if __name__ == "__main__":
     # arguments
     parser = argparse.ArgumentParser("Track the screen's average pixel color and set it to the LED light in realtime.")
+    parser.add_argument("-a", "--alpha", type=float, default=0.92, help="Influence of colors other than the greyscale colors")
     parser.add_argument("-d", "--delay", type=int, default=400, help="Delay in ms between each iteration")
-    parser.add_argument("-t", "--threshold", type=int, default=50, help="Sum of change in rgb value to trigger a call")
+    parser.add_argument("-t", "--threshold", type=int, default=30, help="Sum of change in rgb value to trigger a call")
     parser.add_argument("-f", "--force", action="store_true", help="Continue even if a bulb exception is raised")
     args = parser.parse_args();
     delay = args.delay/1000
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     try:
         while True:
             image = snap_screen()
-            avg = avarage_pixel_value_rgb(image)
+            avg = avarage_pixel_value_rgb(image, args.alpha)
             avg = (int(avg[0]), int(avg[1]), int(avg[2]))
             try:
                 # calculate change in rgb sum
