@@ -21,6 +21,9 @@ def bulb_off():
     bulb.turn_off()
 
 
+def set_default_light(bulb:yeelight.Bulb):
+    bulb.set_rgb(50, 50, 50)
+    bulb.set_brightness(70)
 
 
 if __name__ == "__main__":
