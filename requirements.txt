@@ -1,4 +1,4 @@
 yeelight
 python-miio
-mss
 pillow
+numpy
