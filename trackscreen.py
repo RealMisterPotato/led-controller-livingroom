@@ -41,6 +41,7 @@ if __name__ == "__main__":
     # arguments
     parser = argparse.ArgumentParser("Track the screen's average pixel color and set it to the LED light in realtime.")
     parser.add_argument("-d", "--delay", type=int, default=400, help="Delay in ms between each iteration")
+    parser.add_argument("-t", "--threshold", type=int, default=50, help="Sum of change in rgb value to trigger a call")
     parser.add_argument("-f", "--force", action="store_true", help="Continue even if a bulb exception is raised")
     args = parser.parse_args();
     delay = args.delay/1000
@@ -48,18 +49,29 @@ if __name__ == "__main__":
     # ensure the bulb is on
     bulb:Bulb = get_bulb()
     bulb.ensure_on()
+    prev_rgb_value = None
     try:
         while True:
             image = snap_screen()
             avg = avarage_pixel_value_rgb(image)
             avg = (int(avg[0]), int(avg[1]), int(avg[2]))
             try:
-                bulb.set_rgb(avg[0], avg[1], avg[2])
+                # calculate change in rgb sum
+                if prev_rgb_value != None:
+                    diff = (abs(prev_rgb_value[0] - avg[0]), abs(prev_rgb_value[1] - avg[1]), abs(prev_rgb_value[2] - avg[2]))
+                    sum_diff = diff[0] + diff[1] + diff[2]
+                    print("Difference in RGB values:")
+                    print(str(diff) + ", " + str(sum_diff) + "\n\n")
 
-                tup_avg = (avg[0] + avg[1] + avg[2])/3
-                rel = float(tup_avg/255)
-                bulb.set_brightness(rel*100)
-                print(avg)
+                if prev_rgb_value == None or sum_diff >= args.threshold:
+                    bulb.set_rgb(avg[0], avg[1], avg[2])
+                    tup_avg = (avg[0] + avg[1] + avg[2])/3
+                    rel = float(tup_avg/255)
+                    brightness = rel*100
+                    bulb.set_brightness(brightness)
+                    print(f"Set: RGB={avg}, Brightness={brightness}%\n\n")
+                    prev_rgb_value = avg
+
                 sleep(delay)
             except BulbException:
                 print("bulbexception")
